@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087b43">
+<title>学生服务中心 · 成绩与考试</title>
+<style>
+:root{--green:#087a43;--deep:#003f20;--mint:#dff4eb;--bg:#f3f4f3;--text:#202321;--muted:#858b88;--card:#fff;--line:#e6e8e7}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg)}
+button{font:inherit;cursor:pointer;border:0}
+button:focus-visible{outline:3px solid #70cba1;outline-offset:3px}
+.app{min-height:100vh;max-width:900px;margin:0 auto;background:var(--bg);position:relative;padding-bottom:94px}
+.page{display:none;min-height:calc(100vh - 90px);animation:fade .16s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:.7;transform:translateY(3px)}to{opacity:1;transform:none}}
+.topbar{height:74px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:600;position:sticky;top:0;z-index:5;border-bottom:1px solid #f1f1f1}
+.back{position:absolute;left:18px;background:transparent;color:var(--green);font-size:16px}
+.home-content{padding:22px}
+.hero-photo{width:100%;height:280px;border-radius:24px;background:linear-gradient(120deg,#d9e9d9,#fff 45%,#9ebc9e);display:flex;align-items:center;justify-content:center;text-align:center;color:#245b3d;overflow:hidden;position:relative;padding:24px}
+.hero-photo:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,#ffffffa8,transparent 35%),linear-gradient(135deg,transparent,#0d58301a)}
+.hero-photo .hero-copy{position:relative;max-width:500px}
+.hero-photo .eyebrow{font-size:14px;letter-spacing:3px;color:#52745f}
+.hero-photo h1{font-size:clamp(24px,5vw,38px);margin:12px 0 8px;color:#174d31}
+.hero-photo p{margin:0;color:#557363;font-size:15px}
+.card{background:var(--card);border-radius:25px;padding:22px;margin-top:18px;box-shadow:0 1px 5px #00000005}
+.section-head{display:flex;justify-content:space-between;align-items:center;color:#28563f;font-size:23px;font-weight:600;margin-bottom:12px}
+.brand{font-family:Georgia,serif;font-size:15px;line-height:1.05;text-align:right;color:#41634f;letter-spacing:1px}
+.brand small{display:block;font-size:8px;letter-spacing:1px}
+.date{font-size:14px;color:#929794;margin:6px 0}
+.announcement{font-size:19px;line-height:1.5;color:#555}
+.features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.feature{background:#fff;border-radius:20px;padding:18px 8px 15px;display:flex;align-items:center;flex-direction:column;gap:10px;color:#5b625e;min-height:125px}
+.feature svg{width:58px;height:58px;stroke:var(--deep);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.feature .dot{fill:#24b57b;stroke:#24b57b}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,900px);height:88px;background:#ffffffed;backdrop-filter:blur(10px);border-top:1px solid #e5e5e5;display:flex;justify-content:space-around;align-items:center;z-index:10}
+.nav-item{background:transparent;color:#9b9f9d;display:flex;align-items:center;flex-direction:column;gap:5px;font-size:14px;min-width:100px}
+.nav-item svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.8}
+.nav-item.active{color:#25aa72}
+.banner{margin:18px 18px 24px;border-radius:22px;background:linear-gradient(110deg,#003b1d,#00662f);color:#fff;min-height:185px;padding:28px 25px;display:flex;align-items:center;justify-content:space-between;overflow:hidden;position:relative}
+.banner:after{content:"✦  SCHOOL  ✦   ∑  ×  ÷";position:absolute;inset:auto 10px 10px auto;color:#ffffff25;font-size:18px;letter-spacing:4px}
+.banner h1{font-size:clamp(28px,6vw,46px);letter-spacing:7px;margin:0;position:relative;z-index:1}
+.banner p{margin:12px 0 0;color:#c4e5d2;font-size:14px;position:relative;z-index:1}
+.banner-art{font-size:74px;opacity:.9;transform:rotate(-8deg);margin-right:10px}
+.tabs{display:flex;gap:12px;padding:0 24px}
+.tab{flex:1;padding:15px 8px;border-radius:50px;background:#fff;color:#111;font-size:19px}
+.tab.active{background:#00431f;color:white;font-weight:600}
+.empty-state{min-height:410px;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:28px;text-align:center}
+.paper-art{width:220px;height:205px;position:relative;margin-bottom:25px}
+.paper{position:absolute;left:45px;top:12px;width:128px;height:170px;background:white;border:4px solid #12123e;border-radius:18px 18px 12px 12px;box-shadow:0 4px 0 #e4eeee}
+.paper:before{content:"";display:block;background:#d8efeb;height:28px;margin:26px 16px 15px}
+.paper:after{content:"";display:block;height:7px;background:#d8efeb;margin:0 16px 12px;box-shadow:0 24px #d8efeb,0 48px #d8efeb;width:78px}
+.magnifier{position:absolute;right:16px;top:78px;width:76px;height:76px;border:4px solid #11123e;border-radius:50%;background:#ffffffd9}
+.magnifier:after{content:"";position:absolute;width:75px;height:12px;background:#d9efed;border:3px solid #11123e;transform:rotate(48deg);left:50px;top:69px;border-radius:8px;transform-origin:left center}
+.dots{position:absolute;right:0;top:30px;border:2px solid #11123e;border-radius:25px;padding:7px 15px;color:#11123e;letter-spacing:4px;background:white}
+.empty-state h2{font-size:25px;color:#898e8b;font-weight:600;margin:0}
+.small-action{margin-top:22px;background:var(--green);color:white;border-radius:28px;padding:12px 28px;font-size:16px}
+.score-shell{padding:22px 20px 28px}
+.score-tabs{display:flex;background:#fff;border-radius:50px;padding:5px;gap:4px;position:sticky;top:74px;z-index:3;box-shadow:0 2px 10px #00000006}
+.score-tabs button{flex:1;min-height:56px;border-radius:40px;background:transparent;font-size:clamp(14px,3.5vw,20px);white-space:nowrap}
+.score-tabs button.active{background:linear-gradient(135deg,#00522a,#003b1e);color:#fff;font-weight:600}
+.score-title{font-size:27px;margin:32px 0 18px}
+.score-card{background:#fff;border-radius:22px;padding:23px 22px;margin:14px 0;box-shadow:0 1px 4px #00000004}
+.course{font-size:25px;font-weight:650;margin-bottom:9px}
+.code{font-size:19px;color:#a0a4a2;margin-bottom:24px}
+.exam-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f6f7f8;border-radius:15px;padding:16px 14px;min-height:78px}
+.exam-name{font-size:clamp(15px,3.6vw,21px);line-height:1.35}
+.grade{background:#d9f3e8;color:#00844b;border-radius:15px;min-width:100px;padding:12px 18px;text-align:center;font-size:32px;font-weight:700}
+.results-head{background:linear-gradient(135deg,#e2f6ed,#f9fffc);border-radius:22px;padding:25px;margin:22px 0}
+.results-head .kicker{color:var(--green);font-weight:700;letter-spacing:2px;font-size:13px}
+.results-head h1{margin:10px 0 4px;font-size:30px}
+.results-head p{margin:0;color:#69736d}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.stat{background:#ffffffb8;border-radius:15px;padding:13px 8px;text-align:center}
+.stat strong{display:block;font-size:26px;color:var(--green)}
+.stat span{font-size:12px;color:#737c76}
+.result-list{background:#fff;border-radius:20px;padding:4px 18px}
+.result-item{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:18px 0;border-bottom:1px solid var(--line)}
+.result-item:last-child{border-bottom:0}
+.result-item strong{display:block;font-size:16px;margin-bottom:5px}
+.result-item small{color:#929894}
+.result-score{font-size:23px;font-weight:700;color:var(--green);background:#e1f6ec;border-radius:12px;padding:8px 15px;min-width:60px;text-align:center}
+.appeal-blank{background:#fff;min-height:calc(100vh - 162px)}
+.profile-banner{background:linear-gradient(140deg,#1ab57c,#06721d);color:#fff;padding:55px 28px;display:flex;align-items:center;gap:24px;min-height:245px}
+.avatar{width:115px;height:130px;border-radius:9px;background:linear-gradient(135deg,#d4e7ef,#f9f9f9);display:flex;align-items:center;justify-content:center;font-size:45px;color:#275c48;flex-shrink:0;border:1px solid #ffffff60}
+.profile-name{font-size:25px;font-weight:650;margin-bottom:15px}
+.profile-id{font-size:22px;opacity:.95}
+.profile-data{background:#fff;margin:18px 15px;border-radius:24px;padding:0 22px;box-shadow:0 2px 12px #0000000a}
+.data-row{display:flex;justify-content:space-between;gap:16px;align-items:center;min-height:73px;border-bottom:1px solid #e5e6e5;font-size:clamp(15px,3.6vw,20px)}
+.data-row:last-child{border-bottom:0}
+.data-row .value{text-align:right;overflow-wrap:anywhere}
+.data-row .muted{color:#8e9691}
+.security-note{margin:0 20px 24px;color:#7a817d;font-size:13px;line-height:1.6}
+.page-footer{padding:12px 22px 24px;color:#a1a5a3;text-align:center;font-size:12px}
+@media(min-width:650px){.home-content{padding:28px}.hero-photo{height:340px}.score-shell{padding:26px 32px}.score-card{padding:28px 30px}.course{font-size:28px}.profile-data{margin:24px}.profile-banner{padding:55px 50px}}
+@media(max-width:390px){.home-content{padding:14px}.card{padding:17px}.banner{margin:14px 12px 20px;padding:22px 18px}.banner-art{font-size:55px}.score-shell{padding:16px 12px}.score-card{padding:18px 14px}.exam-row{padding:12px 10px}.grade{min-width:72px;padding:10px 12px}.data-row{font-size:14px}.profile-banner{gap:15px;padding:36px 18px}.avatar{width:86px;height:100px;font-size:34px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <section id="home" class="page active">
+    <header class="topbar">首页</header>
+    <main class="home-content">
+      <div class="hero-photo" role="img" aria-label="校园阅读场景横幅">
+        <div class="hero-copy"><div class="eyebrow">MALVERN COLLEGE QINGDAO</div><h1>阅读 · 探索 · 成长</h1><p>让每一次学习，都通向更广阔的世界</p></div>
+      </div>
+      <article class="card">
+        <div class="section-head"><span>近期公告</span><span class="brand">MALVERN<small>COLLEGE QINGDAO</small></span></div>
+        <div class="date">2026-05-07</div>
+        <div class="announcement">LSE+4、佐治亚理工、港中文全奖录取不断！</div>
+      </article>
+      <article class="card">
+        <div class="section-head"><span>学生功能</span><span class="brand">MALVERN<small>COLLEGE QINGDAO</small></span></div>
+        <div class="features">
+          <button class="feature" onclick="showPage('leave')"><svg viewBox="0 0 64 64"><path d="M29 8A24 24 0 1 0 55 34"/><path d="M31 18v16h16"/><circle class="dot" cx="48" cy="18" r="9"/></svg><span>我的请假</span></button>
+          <button class="feature" onclick="showPage('leave')"><svg viewBox="0 0 64 64"><path d="M8 56V31L32 10l24 21v25H8Z"/><path d="M22 56V34h20v22"/><circle class="dot" cx="32" cy="26" r="3"/></svg><span>离返校</span></button>
+          <button class="feature" onclick="showPage('exam')"><svg viewBox="0 0 64 64"><path d="M10 18V9h44v38H39"/><path d="M10 18H5v32h31"/><path d="M18 23h25M18 31h20"/><path d="m28 48 8 8 19-20"/><path d="M17 9q4 8 8 0t8 0t8 0t8 0"/></svg><span>考试报名</span></button>
+        </div>
+      </article>
+    </main>
+  </section>
+
+  <section id="exam" class="page">
+    <header class="topbar"><button class="back" onclick="showPage('home')">‹ 返回</button>考试报名</header>
+    <div class="banner"><div><h1>成绩查询</h1><p>考试报名系统操作说明</p></div><div class="banner-art" aria-hidden="true">✎</div></div>
+    <div class="tabs"><button class="tab active" id="currentTab" onclick="switchExamTab('current')">当前考季</button><button class="tab" id="historyTab" onclick="switchExamTab('history')">历史考季</button></div>
+    <div class="empty-state" id="examEmpty">
+      <div class="paper-art" aria-hidden="true"><div class="paper"></div><div class="magnifier"></div><div class="dots">•••</div></div>
+      <h2>暂未查询到外部考试记录</h2>
+      <button class="small-action" onclick="showPage('scores')">成绩查询</button>
+    </div>
+    <div class="page-footer">考试报名系统 · 当前无外部考试记录</div>
+  </section>
+
+  <section id="scores" class="page">
+    <header class="topbar"><button class="back" onclick="showPage('exam')">‹ 返回</button>成绩查询</header>
+    <main class="score-shell">
+      <div class="score-tabs">
+        <button onclick="showPage('appeal')">成绩复议</button>
+        <button class="active" onclick="showPage('subjects')">科目汇总</button>
+        <button onclick="showPage('report')">成绩单汇总</button>
+      </div>
+      <h2 class="score-title">科目汇总</h2>
+      <div id="scoreCards"></div>
+      <div class="page-footer">2026 October Progress Test</div>
+    </main>
+  </section>
+
+  <section id="appeal" class="page">
+    <header class="topbar"><button class="back" onclick="showPage('scores')">‹ 返回</button>成绩复议</header>
+    <div class="appeal-blank" aria-label="成绩复议空白页面"></div>
+  </section>
+
+  <section id="subjects" class="page">
+    <header class="topbar"><button class="back" onclick="showPage('scores')">‹ 返回</button>科目汇总</header>
+    <main class="score-shell">
+      <div class="score-tabs">
+        <button onclick="showPage('appeal')">成绩复议</button>
+        <button class="active" onclick="showPage('subjects')">科目汇总</button>
+        <button onclick="showPage('report')">成绩单汇总</button>
+      </div>
+      <h2 class="score-title">科目汇总</h2>
+      <div id="subjectCards"></div>
+    </main>
+  </section>
+
+  <section id="report" class="page">
+    <header class="topbar"><button class="back" onclick="showPage('scores')">‹ 返回</button>成绩单汇总</header>
+    <main class="score-shell">
+      <div class="score-tabs">
+        <button onclick="showPage('appeal')">成绩复议</button>
+        <button onclick="showPage('subjects')">科目汇总</button>
+        <button class="active" onclick="showPage('report')">成绩单汇总</button>
+      </div>
+      <div class="results-head">
+        <div class="kicker">ACADEMIC TRANSCRIPT · 2026</div>
+        <h1>学生成绩单</h1><p>2026 October Progress Test</p>
+        <div style="margin-top:22px;font-size:18px">学生姓名：<strong>易怡廷</strong></div>
+        <div class="summary-grid">
+          <div class="stat"><strong>5</strong><span>科目数量</span></div>
+          <div class="stat"><strong>6.9</strong><span>平均分（数值参考）</span></div>
+          <div class="stat"><strong>A*</strong><span>成绩表现</span></div>
+        </div>
+      </div>
+      <div class="result-list" id="resultList"></div>
+      <div class="card" style="line-height:1.7;color:#737b76;font-size:14px">说明：本页面为依据所提供截图制作的展示用成绩单，不属于学校正式出具的成绩文件。成绩以学校官方系统为准。</div>
+    </main>
+  </section>
+
+  <section id="profile" class="page">
+    <header class="topbar">个人中心</header>
+    <div class="profile-banner">
+      <div class="avatar" aria-label="个人头像占位">易</div>
+      <div><div class="profile-name">易怡廷</div><div class="profile-id">20250149</div></div>
+    </div>
+    <div class="profile-data">
+      <div class="data-row"><span>学号/Stu No</span><span class="value">20250149</span></div>
+      <div class="data-row"><span>年级/Form</span><span class="value">L6</span></div>
+      <div class="data-row"><span>宿舍楼号/Building No</span><span class="value">4宿</span></div>
+      <div class="data-row"><span>宿舍/House</span><span class="value">MacLaurin</span></div>
+      <div class="data-row"><span>房间号/Room</span><span class="value">513</span></div>
+      <div class="data-row"><span>助理舍监/AHSM</span><span class="value">4#宿舍楼Maclaurin</span></div>
+      <div class="data-row"><span>上网账号/Network ID</span><span class="value">S137</span></div>
+      <div class="data-row"><span>上网密码/Password</span><span class="value muted">••••••••••（已隐藏）</span></div>
+      <div class="data-row"><span>Language</span><span class="value">简体中文⌄</span></div>
+    </div>
+    <p class="security-note">为保护账号安全，个人中心中的网络密码未写入网页。该页面仅用于前端展示，不会连接学校内部系统。</p>
+  </section>
+
+  <section id="leave" class="page">
+    <header class="topbar"><button class="back" onclick="showPage('home')">‹ 返回</button>学生功能</header>
+    <div class="card" style="margin:22px"><h2>学生服务</h2><p style="color:#858b88">此演示页面暂未接入学校请假或离返校系统。</p><button class="small-action" onclick="showPage('home')">返回首页</button></div>
+  </section>
+
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" id="homeNav" onclick="showPage('home')"><svg viewBox="0 0 32 32"><path d="M3 14 16 3l13 11v15H3Z"/><path d="M12 22h8"/></svg><span>首页</span></button>
+    <button class="nav-item" id="profileNav" onclick="showPage('profile')"><svg viewBox="0 0 32 32"><circle cx="16" cy="10" r="6"/><path d="M4 28c1-7 6-10 12-10s11 3 12 10"/><circle cx="16" cy="16" r="14"/></svg><span>个人中心</span></button>
+  </nav>
+</div>
+<script>
+const courses = [
+  {name:"IELTS（阅读，写作）",code:"4WCH2",score:"6.5"},
+  {name:"Alevel 经济 Unit 1",code:"4WEC1",score:"7"},
+  {name:"Alevel 数学 S1",code:"WMA11",score:"7"},
+  {name:"Alevel 会计",code:"WMA12",score:"7"},
+  {name:"Alevel 商务 Unit 1",code:"4WCH1",score:"7"}
+];
+function cardMarkup(c){return `<article class="score-card"><div class="course">${c.name}</div><div class="code">${c.code}</div><div class="exam-row"><span class="exam-name">2026 October Progress Test</span><span class="grade">${c.score}</span></div></article>`}
+document.getElementById('scoreCards').innerHTML=courses.map(cardMarkup).join('');
+document.getElementById('subjectCards').innerHTML=courses.map(cardMarkup).join('');
+document.getElementById('resultList').innerHTML=courses.map(c=>`<div class="result-item"><div><strong>${c.name}</strong><small>${c.code} · 2026 October Progress Test</small></div><div class="result-score">${c.score}</div></div>`).join('');
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));
+  document.getElementById('bottomNav').style.display=['home','profile'].includes(id)?'flex':'none';
+  document.getElementById('homeNav').classList.toggle('active',id==='home');
+  document.getElementById('profileNav').classList.toggle('active',id==='profile');
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function switchExamTab(which){
+  document.getElementById('currentTab').classList.toggle('active',which==='current');
+  document.getElementById('historyTab').classList.toggle('active',which==='history');
+  document.getElementById('examEmpty').querySelector('h2').textContent=which==='current'?'暂未查询到外部考试记录':'暂未查询到历史外部考试记录';
+}
+</script>
+</body>
+</html>
